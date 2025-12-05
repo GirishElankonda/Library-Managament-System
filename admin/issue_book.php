@@ -1,15 +1,20 @@
 <?php
-	require("functions.php");
 	session_start();
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Dashboard</title>
+	<title>Issue Book</title>
 	<meta charset="utf-8" name="viewport" content="width=device-width,intial-scale=1">
 	<link rel="stylesheet" type="text/css" href="../bootstrap-4.4.1/css/bootstrap.min.css">
   	<script type="text/javascript" src="../bootstrap-4.4.1/js/juqery_latest.js"></script>
   	<script type="text/javascript" src="../bootstrap-4.4.1/js/bootstrap.min.js"></script>
+  	<script type="text/javascript">
+  		function alertMsg(){
+  			alert(Book added successfully...);
+  			window.location.href = "admin_dashboard.php";
+  		}
+  	</script>
 </head>
 <body>
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -23,9 +28,9 @@
 		      <li class="nav-item dropdown">
 	        	<a class="nav-link dropdown-toggle" data-toggle="dropdown">My Profile </a>
 	        	<div class="dropdown-menu">
-	        		<a class="dropdown-item" href="view_profile.php">View Profile</a>
+	        		<a class="dropdown-item" href="">View Profile</a>
 	        		<div class="dropdown-divider"></div>
-	        		<a class="dropdown-item" href="edit_profile.php">Edit Profile</a>
+	        		<a class="dropdown-item" href="#">Edit Profile</a>
 	        		<div class="dropdown-divider"></div>
 	        		<a class="dropdown-item" href="change_password.php">Change Password</a>
 	        	</div>
@@ -74,56 +79,60 @@
 		</div>
 	</nav><br>
 	<span><marquee>This is library mangement system. Library opens at 8:00 AM and close at 8:00 PM</marquee></span><br><br>
-	<div class="row">
-		<div class="col-md-3" style="margin: 0px">
-			<div class="card bg-light" style="width: 300px">
-				<div class="card-header">Registered User</div>
-				<div class="card-body">
-					<p class="card-text">No. total Users: <?php echo get_user_count();?></p>
-					<a class="btn btn-danger" href="Regusers.php" target="_blank">View Registered Users</a>
-				</div>
+		<center><h4>Issue Book</h4><br></center>
+		<div class="row">
+			<div class="col-md-4"></div>
+			<div class="col-md-4">
+				<form action="" method="post">
+					<div class="form-group">
+						<label for="book_name">Book Name:</label>
+						<input type="text" name="book_name" class="form-control" required>
+					</div>
+					<div class="form-group">
+						<label for="book_author">Author ID:</label>
+						<select class="form-control" name="book_author">
+							<option>-Select author-</option>
+							<?php  
+								$connection = mysqli_connect("localhost","root","");
+								$db = mysqli_select_db($connection,"lms");
+								$query = "select author_name from authors";
+								$query_run = mysqli_query($connection,$query);
+								while($row = mysqli_fetch_assoc($query_run)){
+									?>
+									<option><?php echo $row['author_name'];?></option>
+									<?php
+								}
+							?>
+						</select>
+						<!--<input type="text" name="book_author" class="form-control" required> -->
+					</div>
+					<div class="form-group">
+						<label for="book_no">Book Number:</label>
+						<input type="text" name="book_no" class="form-control" required>
+					</div>
+					<div class="form-group">
+						<label for="student_id">Student ID:</label>
+						<input type="text" name="student_id" class="form-control" required>
+					</div>
+					<div class="form-group">
+						<label for="issue_date">Issue Date:</label>
+						<input type="text" name="issue_date" class="form-control" value="<?php echo date("yy-m-d");?>" required>
+					</div>
+					<button type="submit" name="issue_book" class="btn btn-primary">Issue Book</button>
+				</form>
 			</div>
+			<div class="col-md-4"></div>
 		</div>
-		<div class="col-md-3" style="margin: 0px">
-			<div class="card bg-light" style="width: 300px">
-				<div class="card-header">Total Book</div>
-				<div class="card-body">
-					<p class="card-text">No of books available: <?php echo get_book_count();?></p>
-					<a class="btn btn-success" href="Regbooks.php" target="_blank">View All Books</a>
-				</div>
-			</div>
-		</div>
-		<div class="col-md-3" style="margin: 0px">
-			<div class="card bg-light" style="width: 300px">
-				<div class="card-header">Book Categories</div>
-				<div class="card-body">
-					<p class="card-text">No of Book's Categories: <?php echo get_category_count();?></p>
-					<a class="btn btn-warning" href="Regcat.php" target="_blank">View Categories</a>
-				</div>
-			</div>
-		</div>
-		<div class="col-md-3" style="margin: 0px">
-			<div class="card bg-light" style="width: 300px">
-				<div class="card-header">No. of Authors</div>
-				<div class="card-body">
-					<p class="card-text">No of Authors: <?php echo get_author_count();?></p>
-					<a class="btn btn-primary" href="Regauthor.php" target="_blank">View Authors</a>
-				</div>
-			</div>
-		</div>
-	</div><br><br>
-	<div class="row">
-		<div class="col-md-3" style="margin: 0px">
-			<div class="card bg-light" style="width: 300px">
-				<div class="card-header">Book Issued</div>
-				<div class="card-body">
-					<p class="card-text">No of book issued: <?php echo get_issue_book_count();?></p>
-					<a class="btn btn-success" href="view_issued_book.php" target="_blank">View Issued Books</a>
-				</div>
-			</div>
-		</div>
-		<div class="col-md-3"></div>
-		<div class="col-md-3"></div>
-	</div>
 </body>
 </html>
+
+<?php
+	if(isset($_POST['issue_book']))
+	{
+		$connection = mysqli_connect("localhost","root","");
+		$db = mysqli_select_db($connection,"lms");
+		$query = "insert into issued_books values(null,$_POST[book_no],'$_POST[book_name]','$_POST[book_author]',$_POST[student_id],1,'$_POST[issue_date]')";
+		$query_run = mysqli_query($connection,$query);
+		#header("Location:admin_dashboard.php");
+	}
+?>

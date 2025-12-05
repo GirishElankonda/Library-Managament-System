@@ -1,21 +1,17 @@
 <?php
 	session_start();
-	function get_user_issue_book_count(){
-		$connection = mysqli_connect("localhost","root","");
-		$db = mysqli_select_db($connection,"lms");
-		$user_issue_book_count = 0;
-		$query = "select count(*) as user_issue_book_count from issued_books where student_id = $_SESSION[id]";
-		$query_run = mysqli_query($connection,$query);
-		while ($row = mysqli_fetch_assoc($query_run)){
-			$user_issue_book_count = $row['user_issue_book_count'];
-		}
-		return($user_issue_book_count);
-	}
+	#fetch data from database
+	$connection = mysqli_connect("localhost","root","");
+	$db = mysqli_select_db($connection,"lms");
+	$book_name = "";
+	$author = "";
+	$book_no = "";
+	$query = "select book_name,book_author,book_no from issued_books where student_id = $_SESSION[id] and status = 1";
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Dashboard</title>
+	<title>Issued Books</title>
 	<meta charset="utf-8" name="viewport" content="width=device-width,intial-scale=1">
 	<link rel="stylesheet" type="text/css" href="bootstrap-4.4.1/css/bootstrap.min.css">
   	<script type="text/javascript" src="bootstrap-4.4.1/js/juqery_latest.js"></script>
@@ -25,7 +21,7 @@
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 		<div class="container-fluid">
 			<div class="navbar-header">
-				<a class="navbar-brand" href="admin_dashboard.php">Library Management System (LMS)</a>
+				<a class="navbar-brand" href="user_dashboard.php">Library Management System (LMS)</a>
 			</div>
 			<font style="color: white"><span><strong>Welcome: <?php echo $_SESSION['name'];?></strong></span></font>
 			<font style="color: white"><span><strong>Email: <?php echo $_SESSION['email'];?></strong></font>
@@ -47,18 +43,35 @@
 		</div>
 	</nav><br>
 	<span><marquee>This is library mangement system. Library opens at 8:00 AM and close at 8:00 PM</marquee></span><br><br>
-	<div class="row">
-		<div class="col-md-3" style="margin: 25px">
-			<div class="card bg-light" style="width: 300px">
-				<div class="card-header">Book Issued</div>
-				<div class="card-body">
-					<p class="card-text">No of book issued: <?php echo get_user_issue_book_count();?></p>
-					<a class="btn btn-success" href="view_issued_book.php">View Issued Books</a>
-				</div>
+		<center><h4>Issued Book's Detail</h4><br></center>
+		<div class="row">
+			<div class="col-md-2"></div>
+			<div class="col-md-8">
+				<form>
+					<table class="table-bordered" width="900px" style="text-align: center">
+						<tr>
+							<th>Name</th>
+							<th>Author</th>
+							<th>Number</th>
+						</tr>
+				
+					<?php
+						$query_run = mysqli_query($connection,$query);
+						while ($row = mysqli_fetch_assoc($query_run)){
+							?>
+							<tr>
+							<td><?php echo $row['book_name'];?></td>
+							<td><?php echo $row['book_author'];?></td>
+							<td><?php echo $row['book_no'];?></td>
+						</tr>
+
+					<?php
+						}
+					?>	
+				</table>
+				</form>
 			</div>
+			<div class="col-md-2"></div>
 		</div>
-		<div class="col-md-3"></div>
-		<div class="col-md-3"></div>
-	</div>
 </body>
 </html>
