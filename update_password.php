@@ -1,29 +1,32 @@
 <?php
-	session_start();
-	$connection = mysqli_connect("localhost","root","");
-	$db = mysqli_select_db($connection,"lms");
-	$password = "";
-	$query = "select * from users where email = '$_SESSION[email]'";
-	$query_run = mysqli_query($connection,$query);
-	while ($row = mysqli_fetch_assoc($query_run)){
-		$password = $row['password'];
-	}
-	if($password == $_POST['new_password']){
-		$query = "update users set password = '$_POST[new_password]' where email = '$_SESSION[email]'";
-		$query_run = mysqli_query($connection,$query);
-		?>
-		<script type="text/javascript">
-			alert("Updated successfully...");
-			window.location.href = "user_dashboard.php";
-		</script>
-		<?php
-	}
-	else{
-		?>
-		<script type="text/javascript">
-			alert("Wrong User Password...");
-			window.location.href = "change_password.php";
-		</script>
-		<?php
-	}
+session_start();
+$email = $_SESSION['email'];
+
+$connection = mysqli_connect("localhost","root","");
+$db = mysqli_select_db($connection,"lms");
+
+$query = "select * from users where email='$email'";
+$query_run = mysqli_query($connection,$query);
+
+if($row = mysqli_fetch_assoc($query_run)){
+
+    if($row['password'] == $_POST['old_password']){
+
+        $new_password = $_POST['new_password'];
+
+        $update_query = "UPDATE users SET password='$new_password' WHERE email='$email'";
+        mysqli_query($connection, $update_query);
+
+        echo "<script>
+                alert('Password Updated Successfully');
+                window.location.href='user_dashboard.php';
+              </script>";
+    }
+    else{
+        echo "<script>
+                alert('Old Password is Wrong. Try Again.');
+                window.location.href='change_password.php';
+              </script>";
+    }
+}
 ?>

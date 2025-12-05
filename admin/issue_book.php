@@ -86,7 +86,20 @@
 				<form action="" method="post">
 					<div class="form-group">
 						<label for="book_name">Book Name:</label>
-						<input type="text" name="book_name" class="form-control" required>
+						<select class="form-control" name="book_author">
+							<option>-Select Book Name-</option>
+							<?php  
+								$connection = mysqli_connect("localhost","root","");
+								$db = mysqli_select_db($connection,"lms");
+								$query = "select book_name from books";
+								$query_run = mysqli_query($connection,$query);
+								while($row = mysqli_fetch_assoc($query_run)){
+									?>
+									<option><?php echo $row['book_name'];?></option>
+									<?php
+								}
+							?>
+						</select>
 					</div>
 					<div class="form-group">
 						<label for="book_author">Author ID:</label>
@@ -95,7 +108,7 @@
 							<?php  
 								$connection = mysqli_connect("localhost","root","");
 								$db = mysqli_select_db($connection,"lms");
-								$query = "select author_name from authors";
+								$query = "select author_name from authors";//optimize sql code
 								$query_run = mysqli_query($connection,$query);
 								while($row = mysqli_fetch_assoc($query_run)){
 									?>
